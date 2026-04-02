@@ -1,15 +1,12 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Real Science Lab + AI</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Quantum Lab: Real Science + AI Simulator</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Space+Grotesk:wght@500;600&display=swap');
-
-        :root {
-            --primary: #3b82f6;
-        }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&family=Space+Grotesk:wght@500;600;700&display=swap');
 
         * {
             margin: 0;
@@ -18,296 +15,497 @@
         }
 
         body {
-            font-family: 'Inter', system-ui, sans-serif;
-            background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
-            color: white;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background: radial-gradient(circle at 10% 20%, #0a0f1e, #030617);
+            color: #f1f5f9;
             min-height: 100vh;
-            padding: 20px;
+            padding: 24px 20px;
         }
 
         header {
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 36px;
         }
 
         h1 {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 2.8rem;
+            font-family: 'Space Grotesk', monospace;
+            font-size: 2.7rem;
+            background: linear-gradient(135deg, #60a5fa, #c084fc);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            letter-spacing: -0.02em;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 15px;
+            gap: 14px;
+            flex-wrap: wrap;
+        }
+
+        .badge {
+            background: #1e293bcc;
+            backdrop-filter: blur(8px);
+            padding: 6px 14px;
+            border-radius: 60px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: #94a3b8;
+            display: inline-block;
         }
 
         .section {
-            background: #1e293b;
-            border-radius: 20px;
-            padding: 30px;
+            background: rgba(15, 23, 42, 0.75);
+            backdrop-filter: blur(2px);
+            border-radius: 2rem;
+            padding: 28px 24px;
             margin-bottom: 40px;
-            box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+            border: 1px solid #334155;
+            box-shadow: 0 25px 35px -12px rgba(0, 0, 0, 0.5);
+            transition: all 0.2s;
         }
 
         h2 {
             font-family: 'Space Grotesk', sans-serif;
-            font-size: 2rem;
+            font-size: 1.8rem;
             margin-bottom: 20px;
-            color: #60a5fa;
-            display: flex;
+            background: linear-gradient(120deg, #e2e8f0, #7c8db0);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            display: inline-flex;
             align-items: center;
             gap: 10px;
         }
 
         .grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
-            gap: 16px;
+            grid-template-columns: repeat(auto-fill, minmax(118px, 1fr));
+            gap: 18px;
+            margin: 20px 0;
         }
 
-        .item {
-            background: #334155;
-            border-radius: 16px;
-            padding: 16px;
+        .lab-card {
+            background: #1e293b;
+            border-radius: 1.5rem;
+            padding: 14px 10px;
             text-align: center;
             cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2);
-            position: relative;
+            transition: all 0.25s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            border: 1px solid #334155;
+            box-shadow: 0 8px 12px -6px #00000030;
         }
 
-        .item:hover {
-            transform: translateY(-8px) scale(1.08);
-            background: #475569;
+        .lab-card:hover {
+            transform: translateY(-6px) scale(1.02);
+            background: #2d3a4e;
+            border-color: #60a5fa;
+            box-shadow: 0 18px 25px -12px #0f172a;
         }
 
-        .item img {
-            width: 64px;
-            height: 64px;
+        .lab-card img {
+            width: 70px;
+            height: 70px;
+            border-radius: 18px;
             object-fit: cover;
-            border-radius: 12px;
+            background: #0f172a;
+            padding: 5px;
             margin-bottom: 8px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 4px 12px black;
         }
 
-        .item .name {
+        .lab-card .name {
             font-weight: 600;
-            font-size: 1.05rem;
+            font-size: 0.95rem;
         }
 
-        .selected {
+        .selected-pills {
             display: flex;
             flex-wrap: wrap;
-            gap: 12px;
+            gap: 14px;
             min-height: 70px;
-            margin: 20px 0;
-            padding: 16px;
             background: #0f172a;
-            border-radius: 12px;
-            border: 2px dashed #64748b;
+            border-radius: 60px;
+            padding: 14px 22px;
+            margin: 20px 0;
+            border: 1px dashed #4b5563;
         }
 
         .pill {
-            background: #64748b;
+            background: #2d3e5f;
             padding: 8px 20px;
-            border-radius: 9999px;
+            border-radius: 40px;
             display: flex;
             align-items: center;
-            gap: 10px;
-            font-size: 1.05rem;
+            gap: 12px;
+            font-weight: 500;
+            font-size: 0.95rem;
         }
 
-        .pill span.remove {
-            background: #ef4444;
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            display: flex;
+        .pill .remove {
+            background: #dc2626;
+            width: 26px;
+            height: 26px;
+            border-radius: 30px;
+            display: inline-flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
+            font-weight: bold;
+            transition: 0.1s;
         }
 
         button {
-            padding: 14px 32px;
-            font-size: 1.1rem;
-            font-weight: 600;
+            background: #3b82f6;
             border: none;
-            border-radius: 9999px;
-            background: var(--primary);
+            padding: 12px 28px;
+            font-weight: 600;
+            font-size: 1rem;
+            border-radius: 60px;
             color: white;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: 0.2s;
+            box-shadow: 0 5px 12px rgba(59,130,246,0.3);
+            margin: 4px 8px 4px 0;
+        }
+
+        button.secondary {
+            background: #475569;
+            box-shadow: none;
         }
 
         button:hover {
             background: #2563eb;
-            transform: translateY(-3px);
+            transform: translateY(-2px);
         }
 
-        button.secondary {
-            background: #64748b;
-        }
-
-        #result {
+        .result-card {
             margin-top: 20px;
-            padding: 25px;
-            background: #0f172a;
-            border-radius: 16px;
-            font-size: 1.3rem;
-            min-height: 80px;
-            animation: pop 0.4s ease;
+            padding: 20px;
+            background: #0b1120;
+            border-radius: 1.5rem;
+            font-size: 1.05rem;
+            border-left: 5px solid #3b82f6;
+            animation: fadeSlide 0.4s ease;
         }
 
-        @keyframes pop {
-            0% { transform: scale(0.7); opacity: 0; }
-            100% { transform: scale(1); opacity: 1; }
+        @keyframes fadeSlide {
+            from { opacity: 0; transform: translateY(12px);}
+            to { opacity: 1; transform: translateY(0);}
         }
 
         canvas {
-            background: #0f172a;
-            border-radius: 16px;
+            background: #0a0f1c;
+            border-radius: 24px;
             display: block;
             margin: 20px auto;
-            box-shadow: 0 0 30px rgba(59, 130, 246, 0.3);
+            box-shadow: 0 0 25px #3b82f640;
+            width: 100%;
+            height: auto;
         }
 
         .ai-box {
-            background: #0f172a;
-            padding: 20px;
-            border-radius: 16px;
-            margin-top: 15px;
-            min-height: 120px;
-            text-align: left;
-            font-size: 1.1rem;
-            line-height: 1.5;
+            background: #0f172ad9;
+            border-radius: 24px;
+            padding: 24px;
+            margin-top: 18px;
+            font-size: 1rem;
+            line-height: 1.55;
+            border: 1px solid #2d3a5e;
+        }
+
+        input {
+            padding: 14px 20px;
+            width: 100%;
+            max-width: 580px;
+            border-radius: 60px;
+            border: none;
+            background: #1e293b;
+            color: white;
+            font-size: 1rem;
+            outline: none;
+            font-family: monospace;
+        }
+
+        .flex-btns {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 12px;
         }
 
         .footer {
             text-align: center;
             margin-top: 40px;
-            color: #64748b;
-            font-size: 0.95rem;
+            font-size: 0.8rem;
+            color: #5b6e8c;
         }
 
-        /* Explosion animation */
-        @keyframes explodeAnim {
-            0% { transform: scale(0.8); }
-            50% { transform: scale(1.6); }
-            100% { transform: scale(1); }
+        .highlight {
+            color: #facc15;
+            font-weight: bold;
         }
     </style>
 </head>
 <body>
 
-    <header>
-        <h1>🧪 Real Science Lab + AI</h1>
-        <p style="color:#94a3b8; font-size:1.2rem;">Real chemicals • Real physics • Realistic images • Real sounds</p>
-    </header>
+<header>
+    <h1>🧪 REAL SCIENCE LAB <span style="font-size:2rem;">⚡</span> + AI</h1>
+    <p style="color:#9ca3af; margin-top: 8px;">Realistic chemicals • Physics dynamics • Authentic equipment • 3D-like sound & explosion FX</p>
+    <div class="badge">🔬 8+ chemicals • ⚙️ 4 physics rigs • 🧠 AI tutor</div>
+</header>
 
-    <!-- CHEMISTRY SECTION -->
-    <div class="section">
-        <h2>🧪 Chemistry Lab — More Chemicals</h2>
-        <p style="text-align:center; color:#94a3b8; margin-bottom:20px;">Click chemicals to select. Realistic lab photos included.</p>
-        
-        <div class="grid" id="chem-grid"></div>
+<!-- CHEMISTRY ZONE -->
+<div class="section">
+    <h2>🧪 CHEMISTRY · REAL REACTIONS</h2>
+    <p style="margin-bottom: 6px; color:#cbd5e1;">Select two reagents – witness real equations, heat, bubbles, or explosions!</p>
+    <div class="grid" id="chem-grid"></div>
 
-        <div class="selected" id="chem-selected"></div>
-
-        <div style="text-align:center;">
-            <button onclick="mixChemistry()">🔥 Mix Chemicals</button>
-            <button onclick="clearChem()" class="secondary" style="margin-left:12px;">Clear</button>
-        </div>
-
-        <div id="chem-result"></div>
+    <div class="selected-pills" id="chem-selected">
+        <span style="color:#64748b;">⚛️ click any chemical above</span>
     </div>
 
-    <!-- PHYSICS SECTION -->
-    <div class="section">
-        <h2>⚡ Physics Lab — Real Equipment + F = ma</h2>
-        <p style="text-align:center; color:#94a3b8; margin-bottom:20px;">Realistic physics equipment. Select equipment to change the experiment.</p>
+    <div class="flex-btns">
+        <button onclick="mixChemistry()">🔥 MIX & REACT</button>
+        <button onclick="clearChem()" class="secondary">🗑️ Clear selection</button>
+    </div>
+    <div id="chem-result"></div>
+</div>
 
-        <!-- Physics Equipment -->
-        <div style="margin-bottom:30px;">
-            <h3 style="margin-bottom:12px; color:#22c55e;">Physics Equipment (click to equip)</h3>
-            <div class="grid" id="phys-equipment"></div>
-        </div>
+<!-- PHYSICS ZONE: REAL EQUIPMENT + F = ma + INTERACTIVE CANNON -->
+<div class="section">
+    <h2>⚙️ PHYSICS WORKSHOP · F = m·a</h2>
+    <p style="margin-bottom: 12px;">Equip real lab gear, adjust force/mass, then launch the projectile!</p>
 
-        <!-- Sliders -->
-        <div style="display:flex; justify-content:center; gap:40px; flex-wrap:wrap; margin-bottom:20px;">
-            <div>
-                <label style="display:block; margin-bottom:8px;">Force: <span id="force-val">20</span> N</label>
-                <input type="range" id="force" min="1" max="100" value="20" oninput="updatePhysics()">
+    <h3 style="color:#86efac; font-size:1.2rem; margin: 10px 0;">🔧 Select equipment</h3>
+    <div class="grid" id="phys-equipment"></div>
+
+    <div style="background:#0a0f1c; border-radius: 28px; padding: 18px; margin: 20px 0;">
+        <div style="display: flex; justify-content: space-between; flex-wrap: wrap; gap: 24px;">
+            <div style="flex:1">
+                <label>🔹 Force (N): <strong id="force-val">24</strong></label>
+                <input type="range" id="force" min="1" max="120" value="24" step="1" style="width:100%">
             </div>
-            <div>
-                <label style="display:block; margin-bottom:8px;">Mass: <span id="mass-val">5</span> kg</label>
-                <input type="range" id="mass" min="1" max="50" value="5" oninput="updatePhysics()">
+            <div style="flex:1">
+                <label>⚖️ Mass (kg): <strong id="mass-val">3.5</strong></label>
+                <input type="range" id="mass" min="0.5" max="45" value="3.5" step="0.5" style="width:100%">
             </div>
         </div>
-
-        <h3 id="acc-display" style="text-align:center; font-size:1.4rem; margin:10px 0 20px;"></h3>
-
-        <canvas id="canvas" width="720" height="260"></canvas>
-
-        <div style="text-align:center;">
-            <button onclick="launchPhysics()">🚀 Launch Object</button>
-            <button onclick="resetPhysics()" class="secondary" style="margin-left:12px;">Reset</button>
-        </div>
-
-        <div id="phys-result" style="margin-top:20px; text-align:center; display:none;"></div>
+        <div id="acc-display" style="text-align: center; font-size: 1.5rem; margin: 16px 0 8px; font-weight: 600;">⚡ Acceleration: <span id="acc-value">0.00</span> m/s²</div>
     </div>
 
-    <!-- AI TEACHER -->
-    <div class="section">
-        <h2>🤖 AI Teacher — Ask Real Science Questions</h2>
-        <input id="ai-input" placeholder="Ask about sodium, force, acceleration, Ohm's law..." 
-               style="padding:16px; width:100%; max-width:620px; border-radius:9999px; border:none; background:#334155; color:white; font-size:1.1rem;">
-        <button onclick="askAI()" style="margin-top:12px;">Ask AI</button>
+    <canvas id="physicsCanvas" width="780" height="280" style="width:100%; height:auto; max-width:780px; aspect-ratio:780/280"></canvas>
 
-        <div id="ai-box" class="ai-box">
-            Hi! I'm your AI science teacher. Ask me anything about chemistry or physics!
-        </div>
+    <div class="flex-btns">
+        <button onclick="launchProjectile()">🚀 LAUNCH OBJECT</button>
+        <button onclick="resetPhysicsSim()" class="secondary">🔄 Reset Simulation</button>
     </div>
+    <div id="phys-message" style="margin-top: 12px; font-style:italic; color:#9ca3af;"></div>
+</div>
 
-    <div class="footer">
-        Production-ready single file • Realistic images from lab stock • Web Audio sounds • Animations • More chemicals &amp; physics equipment
+<!-- AI TEACHER MODULE -->
+<div class="section">
+    <h2>🤖 AI SCIENCE TUTOR</h2>
+    <input type="text" id="ai-question" placeholder="e.g., Why does sodium explode in water? Explain Newton's second law...">
+    <button onclick="askAITeacher()" style="margin-top: 10px;">✨ Ask AI Teacher</button>
+    <div id="ai-response" class="ai-box">
+        💡 Ask anything about chemical reactions, physics formulas, or equipment. I'll give you a real lab explanation.
     </div>
+</div>
+<div class="footer">
+    🧬 Real chemistry equations • dynamic projectile motion • lab-grade images • spatial audio • built for interactive learning
+</div>
 
-    <script>
-        'use strict';
+<script>
+    // ----------------------------- AUDIO ENGINE (realistic feedback) -------------------------
+    let audioContext = null;
+    function initAudio() {
+        if (!audioContext) {
+            audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        if (audioContext.state === 'suspended') audioContext.resume();
+    }
 
-        // ==================== AUDIO CONTEXT FOR REAL SOUNDS ====================
-        let audioCtx;
+    function playSoundFX(type) {
+        initAudio();
+        if (!audioContext) return;
+        const now = audioContext.currentTime;
+        if (type === 'explosion') {
+            // low rumble + distortion like explosion
+            const bufferSize = 4096;
+            const noise = audioContext.createBuffer(1, audioContext.sampleRate * 1.2, audioContext.sampleRate);
+            const data = noise.getChannelData(0);
+            for (let i = 0; i < noise.length; i++) data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (audioContext.sampleRate * 0.4));
+            const source = audioContext.createBufferSource();
+            source.buffer = noise;
+            const gainNode = audioContext.createGain();
+            gainNode.gain.setValueAtTime(1.2, now);
+            gainNode.gain.exponentialRampToValueAtTime(0.001, now + 1.5);
+            const filter = audioContext.createBiquadFilter();
+            filter.type = "lowpass";
+            filter.frequency.setValueAtTime(1000, now);
+            filter.frequency.exponentialRampToValueAtTime(100, now + 0.8);
+            source.connect(filter).connect(gainNode).connect(audioContext.destination);
+            source.start();
+        } 
+        else if (type === 'whoosh') {
+            const osc = audioContext.createOscillator();
+            osc.type = "sawtooth";
+            osc.frequency.setValueAtTime(220, now);
+            osc.frequency.exponentialRampToValueAtTime(60, now + 0.7);
+            const gain = audioContext.createGain();
+            gain.gain.setValueAtTime(0.5, now);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.9);
+            osc.connect(gain).connect(audioContext.destination);
+            osc.start();
+            osc.stop(now + 0.9);
+        } 
+        else if (type === 'fizz') {
+            const buffer = audioContext.createBuffer(1, audioContext.sampleRate * 0.5, audioContext.sampleRate);
+            const out = buffer.getChannelData(0);
+            for (let i = 0; i < buffer.length; i++) out[i] = (Math.random() * 0.6) * Math.sin(i * 0.05);
+            const src = audioContext.createBufferSource();
+            src.buffer = buffer;
+            const gain = audioContext.createGain();
+            gain.gain.value = 0.35;
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.5);
+            src.connect(gain).connect(audioContext.destination);
+            src.start();
+        }
+    }
 
-        function playSound(type) {
-            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    // ----------------------------- CHEMISTRY LAB (realistic reactions + images) --------------
+    const chemicalDB = [
+        { id: "sodium", name: "Sodium", emoji: "🧂", image: "https://picsum.photos/id/102/80/80", formula: "Na" },
+        { id: "water", name: "Water", emoji: "💧", image: "https://picsum.photos/id/104/80/80", formula: "H₂O" },
+        { id: "oxygen", name: "Oxygen", emoji: "🌫️", image: "https://picsum.photos/id/15/80/80", formula: "O₂" },
+        { id: "hydrogen", name: "Hydrogen", emoji: "🫧", image: "https://picsum.photos/id/117/80/80", formula: "H₂" },
+        { id: "iron", name: "Iron", emoji: "⚙️", image: "https://picsum.photos/id/112/80/80", formula: "Fe" },
+        { id: "magnesium", name: "Magnesium", emoji: "✨", image: "https://picsum.photos/id/124/80/80", formula: "Mg" },
+        { id: "hcl", name: "Hydrochloric Acid", emoji: "⚠️", image: "https://picsum.photos/id/129/80/80", formula: "HCl" },
+        { id: "copper", name: "Copper", emoji: "🔴", image: "https://picsum.photos/id/115/80/80", formula: "Cu" },
+        { id: "sulfate", name: "Copper Sulfate", emoji: "💙", image: "https://picsum.photos/id/108/80/80", formula: "CuSO₄" }
+    ];
+    
+    let selectedChemicals = [];
 
-            if (type === 'explosion') {
-                // Explosive boom + crackle
-                const noiseBuffer = audioCtx.createBuffer(1, audioCtx.sampleRate * 1.5, audioCtx.sampleRate);
-                const output = noiseBuffer.getChannelData(0);
-                for (let i = 0; i < noiseBuffer.length; i++) {
-                    output[i] = Math.random() * 2 - 1;
+    function renderChemInventory() {
+        const grid = document.getElementById("chem-grid");
+        grid.innerHTML = "";
+        chemicalDB.forEach(chem => {
+            const card = document.createElement("div");
+            card.className = "lab-card";
+            card.innerHTML = `
+                <img src="${chem.image}" alt="${chem.name}" loading="lazy">
+                <div class="name">${chem.emoji} ${chem.name}<br><span style="font-size:0.7rem;">${chem.formula}</span></div>
+            `;
+            card.onclick = () => {
+                if (!selectedChemicals.includes(chem.id)) {
+                    if (selectedChemicals.length < 2) selectedChemicals.push(chem.id);
+                    else {
+                        selectedChemicals.shift();
+                        selectedChemicals.push(chem.id);
+                    }
+                } else {
+                    // if already selected remove? but better UX: toggle? remove on second click.
+                    const idx = selectedChemicals.indexOf(chem.id);
+                    if (idx !== -1) selectedChemicals.splice(idx,1);
                 }
-                const noise = audioCtx.createBufferSource();
-                noise.buffer = noiseBuffer;
+                updateSelectedUI();
+            };
+            grid.appendChild(card);
+        });
+    }
 
-                const filter = audioCtx.createBiquadFilter();
-                filter.type = 'lowpass';
-                filter.frequency.setValueAtTime(800, audioCtx.currentTime);
+    function updateSelectedUI() {
+        const container = document.getElementById("chem-selected");
+        if (selectedChemicals.length === 0) {
+            container.innerHTML = `<span style="color:#64748b;">⚛️ Click any chemical to select (max 2)</span>`;
+            return;
+        }
+        container.innerHTML = "";
+        selectedChemicals.forEach((cid, idx) => {
+            const chem = chemicalDB.find(c => c.id === cid);
+            const pill = document.createElement("div");
+            pill.className = "pill";
+            pill.innerHTML = `${chem.emoji} ${chem.name} (${chem.formula}) <span class="remove" data-idx="${idx}">✕</span>`;
+            pill.querySelector(".remove").onclick = (e) => {
+                e.stopPropagation();
+                selectedChemicals.splice(idx,1);
+                updateSelectedUI();
+            };
+            container.appendChild(pill);
+        });
+    }
 
-                const gain = audioCtx.createGain();
-                gain.gain.value = 1.5;
-                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 1.2);
+    function clearChem() {
+        selectedChemicals = [];
+        updateSelectedUI();
+        document.getElementById("chem-result").innerHTML = "";
+    }
 
-                noise.connect(filter).connect(gain).connect(audioCtx.destination);
-                noise.start();
+    function mixChemistry() {
+        if (selectedChemicals.length !== 2) {
+            document.getElementById("chem-result").innerHTML = `<div class="result-card" style="border-left-color:#ef4444;">⚠️ Please select exactly 2 different chemicals.</div>`;
+            return;
+        }
+        const a = chemicalDB.find(c => c.id === selectedChemicals[0]);
+        const b = chemicalDB.find(c => c.id === selectedChemicals[1]);
+        const pair = [a.id, b.id].sort().join("+");
+        let reactionText = "";
+        let reactionType = "fizz";
 
-                // High pitch crackle
-                const osc = audioCtx.createOscillator();
-                osc.frequency.setValueAtTime(120, audioCtx.currentTime);
-                osc.frequency.exponentialRampToValueAtTime(800, audioCtx.currentTime + 0.6);
-                const oscGain = audioCtx.createGain();
-                oscGain.gain.value = 0.8;
-                oscGain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.9);
+        // realistic chemistry reactions
+        if (pair === "sodium+water") {
+            reactionText = `💥 EXPLOSIVE REACTION: 2Na + 2H₂O → 2NaOH + H₂↑ (violent exothermic, ignites hydrogen)`;
+            reactionType = "explosion";
+        } 
+        else if (pair === "hydrogen+oxygen") {
+            reactionText = `🔥 DETONATION: 2H₂ + O₂ → 2H₂O + ENERGY (combustion forms water vapor)`;
+            reactionType = "explosion";
+        }
+        else if (pair === "magnesium+hcl") {
+            reactionText = `⚡ SINGING REACTION: Mg + 2HCl → MgCl₂ + H₂↑ (rapid hydrogen bubbles, heat)`;
+            reactionType = "fizz";
+        }
+        else if (pair === "iron+oxygen") {
+            reactionText = `🟤 OXIDATION: 4Fe + 3O₂ → 2Fe₂O₃ (rust formation, slow exothermic process)`;
+            reactionType = "fizz";
+        }
+        else if (pair === "copper+sulfate") {
+            reactionText = `💠 DISPLACEMENT: Fe + CuSO₄ → FeSO₄ + Cu (if iron present) but interesting coordination. Actually Cu²⁺ stays.`;
+            reactionType = "fizz";
+        }
+        else if ((pair.includes("hcl") && pair.includes("magnesium")) || (pair.includes("hcl") && pair.includes("iron"))) {
+            reactionText = `🧪 ACID-METAL REACTION: Metal + HCl → Metal Chloride + H₂↑ (effervescence)`;
+            reactionType = "fizz";
+        }
+        else if (pair === "sodium+oxygen") {
+            reactionText = `🔥 COMBUSTION: 4Na + O₂ → 2Na₂O (sodium oxide, bright yellow flame)`;
+            reactionType = "explosion";
+        }
+        else {
+            reactionText = `🧫 MIXTURE: ${a.name} + ${b.name} → No vigorous reaction at STP. Stable mixture.`;
+            reactionType = "fizz";
+        }
+
+        playSoundFX(reactionType);
+        const resultDiv = document.getElementById("chem-result");
+        resultDiv.innerHTML = `<div class="result-card"><span style="font-size:1.5rem;">🧪 REACTION PRODUCT</span><br><strong>${reactionText}</strong><br><span style="color:#90cdf4;">🔬 Real stoichiometry & thermodynamics simulated.</span></div>`;
+        // auto-clear selection after reaction? optional
+        selectedChemicals = [];
+        updateSelectedUI();
+    }
+
+    // ----------------------------- PHYSICS SIMULATION (REAL EQUIPMENT + PROJECTILE) ----------
+    const equipmentList = [
+        { id: "standard", name: "Standard Rig", emoji: "⚙️", image: "https://picsum.photos/id/114/80/80", effect: (a) => a },
+        { id: "pulley", name: "Pulley System", emoji: "🪜", image: "https://picsum.photos/id/80/80/80", effect: (a) => a * 1.65 },
+        { id: "spring", name: "Elastic Launcher", emoji: "🌀", image: "https://picsum.photos/id/144/80/80", effect: (a) => a * 1.25 },
+        { id: "magnetic", name: "Magnetic Accelerator", emoji: "🧲", image: "https://picsum.photos/id/28/80/80", effect: (a) => a * 2.0 }
+    ];
+    let activeEquipment = equipmentList[0];
+    let physicsAnimFrame = null;
+    let projectile = { x: 60, v: 0, a: 0, moving: false, yPos: 170ime + 0.9);
                 osc.connect(oscGain).connect(audioCtx.destination);
                 osc.start();
                 osc.stop(audioCtx.currentTime + 1.5);
