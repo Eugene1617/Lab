@@ -1,363 +1,179 @@
-```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Real Science Lab</title>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Space+Grotesk:wght@500;600&display=swap');
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Real Science Lab + AI</title>
 
-        :root {
-            --primary: #3b82f6;
-        }
+<style>
+body {
+    font-family: Arial;
+    background: #0f172a;
+    color: white;
+    text-align: center;
+}
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+button {
+    padding: 10px;
+    margin: 5px;
+    border-radius: 10px;
+    border: none;
+    background: #3b82f6;
+    color: white;
+}
 
-        body {
-            font-family: 'Inter', system-ui, sans-serif;
-            background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
-            color: white;
-            min-height: 100vh;
-            overflow-x: hidden;
-        }
+.element {
+    display: inline-block;
+    padding: 10px;
+    margin: 5px;
+    background: #334155;
+    border-radius: 10px;
+    cursor: pointer;
+}
 
-        header {
-            background: #1e293b;
-            padding: 20px 0;
-            text-align: center;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-
-        header h1 {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 2.2rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-        }
-
-        .tabs {
-            display: flex;
-            justify-content: center;
-            background: #1e293b;
-            padding: 8px;
-            gap: 8px;
-            border-bottom: 1px solid #334155;
-        }
-
-        .tab-button {
-            padding: 14px 32px;
-            font-size: 1.1rem;
-            font-weight: 600;
-            background: transparent;
-            color: #cbd5e1;
-            border: none;
-            border-radius: 9999px;
-            cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .tab-button.active {
-            background: var(--primary);
-            color: white;
-            box-shadow: 0 10px 15px -3px rgb(59 130 246);
-        }
-
-        .section {
-            display: none;
-            padding: 30px 20px;
-            max-width: 1280px;
-            margin: 0 auto;
-        }
-
-        .section.active {
-            display: block;
-        }
-
-        .container {
-            max-width: 1100px;
-            margin: 0 auto;
-        }
-
-        h2 {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 2rem;
-            margin-bottom: 20px;
-            text-align: center;
-            background: linear-gradient(90deg, #60a5fa, #a78bfa);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .elements {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-            gap: 16px;
-            margin-bottom: 40px;
-        }
-
-        .element {
-            background: #334155;
-            border-radius: 16px;
-            padding: 20px 16px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2);
-            font-size: 1.1rem;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .element:hover {
-            transform: translateY(-6px) scale(1.05);
-            background: #475569;
-            box-shadow: 0 20px 25px -5px rgba(59, 130, 246, 0.3);
-        }
-
-        .mix-area {
-            background: #1e293b;
-            border-radius: 20px;
-            padding: 30px;
-            margin-bottom: 30px;
-            border: 3px dashed #64748b;
-            transition: border-color 0.3s;
-        }
-
-        .mix-area.active {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.2);
-        }
-
-        .selected-items {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 12px;
-            min-height: 60px;
-            margin-bottom: 20px;
-        }
-
-        .selected-pill {
-            background: #64748b;
-            color: white;
-            padding: 8px 20px;
-            border-radius: 9999px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-weight: 500;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-        }
-
-        .selected-pill .remove {
-            background: #ef4444;
-            color: white;
-            width: 22px;
-            height: 22px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1rem;
-            cursor: pointer;
-        }
-
-        .result {
-            background: #1e293b;
-            border-radius: 20px;
-            padding: 30px;
-            box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.25);
-            animation: popIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-        }
-
-        @keyframes popIn {
-            0% { transform: scale(0.8); opacity: 0; }
-            100% { transform: scale(1); opacity: 1; }
-        }
-
-        .physics-sim {
-            background: #1e293b;
-            border-radius: 20px;
-            padding: 30px;
-            margin-top: 30px;
-        }
-
-        canvas {
-            width: 100%;
-            max-width: 700px;
-            height: 340px;
-            background: #0f172a;
-            border-radius: 16px;
-            display: block;
-            margin: 20px auto;
-            box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.6);
-        }
-
-        .controls {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 24px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 500;
-            color: #e2e8f0;
-        }
-
-        input[type="range"] {
-            width: 100%;
-            accent-color: var(--primary);
-        }
-
-        .value {
-            font-family: monospace;
-            font-size: 1.4rem;
-            font-weight: 700;
-            color: #60a5fa;
-        }
-
-        button {
-            padding: 14px 28px;
-            font-size: 1.1rem;
-            font-weight: 600;
-            border: none;
-            border-radius: 9999px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        button.primary {
-            background: var(--primary);
-            color: white;
-        }
-
-        button.primary:hover {
-            background: #2563eb;
-            transform: translateY(-2px);
-        }
-
-        button.secondary {
-            background: #64748b;
-            color: white;
-        }
-
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(15, 23, 42, 0.9);
-            z-index: 1000;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .modal-content {
-            background: #1e293b;
-            max-width: 420px;
-            width: 90%;
-            border-radius: 20px;
-            padding: 30px;
-            text-align: center;
-            box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.4);
-        }
-
-        .quiz-option {
-            width: 100%;
-            text-align: left;
-            margin: 12px 0;
-            padding: 16px 20px;
-            background: #334155;
-            border-radius: 12px;
-            font-size: 1.1rem;
-        }
-
-        .quiz-option:hover {
-            background: #475569;
-        }
-
-        .footer {
-            text-align: center;
-            padding: 40px 20px 20px;
-            color: #64748b;
-            font-size: 0.95rem;
-        }
-
-        /* Explosion animation */
-        @keyframes explode {
-            0% { transform: scale(0.6); }
-            40% { transform: scale(1.4); }
-            100% { transform: scale(1); }
-        }
-    </style>
+#aiBox {
+    margin-top: 20px;
+    padding: 15px;
+    background: #1e293b;
+    border-radius: 10px;
+}
+</style>
 </head>
+
 <body>
 
-    <header>
-        <h1>🧪 Real Science Lab</h1>
-        <p style="color:#64748b; margin-top: 4px;">Real reactions • Real physics • Real learning</p>
-    </header>
+<h1>🧪 Real Science Lab</h1>
 
-    <!-- TABS -->
-    <div class="tabs">
-        <button onclick="switchTab(0)" class="tab-button active" id="tab-0">
-            🧪 Chemistry Lab
-        </button>
-        <button onclick="switchTab(1)" class="tab-button" id="tab-1">
-            ⚡ Physics Lab
-        </button>
-        <button onclick="switchTab(2)" class="tab-button" id="tab-2">
-            🧠 Science Quiz
-        </button>
-    </div>
+<h2>Chemistry</h2>
+<div id="chem"></div>
+<button onclick="mix()">Mix</button>
 
-    <!-- CHEMISTRY SECTION -->
-    <div id="chem-section" class="section active">
-        <div class="container">
-            <h2>🧪 Chemistry Lab</h2>
-            <p style="text-align:center; color:#94a3b8; margin-bottom:24px; max-width:600px; margin-left:auto; margin-right:auto;">
-                Mix real elements and observe accurate chemical reactions. All formulas are scientifically correct.
-            </p>
+<h3 id="result"></h3>
 
-            <div class="elements" id="chem-elements"></div>
+<hr>
 
-            <div class="mix-area" id="chem-mix-area">
-                <h3 style="margin-bottom:16px;">🧪 Mix Area — Drag or click 2 elements</h3>
-                <div class="selected-items" id="chem-selected-items"></div>
-                <div style="display:flex; gap:12px; flex-wrap:wrap;">
-                    <button onclick="mixChemistry()" class="primary">Mix Chemicals</button>
-                    <button onclick="clearSelection('chem')" class="secondary">Clear All</button>
-                </div>
-            </div>
+<h2>⚡ Physics (F = ma)</h2>
 
-            <div id="chem-result" class="result" style="display:none;"></div>
-        </div>
-    </div>
+Force: <input type="range" id="force" min="1" max="100" value="20" oninput="updatePhysics()">  
+Mass: <input type="range" id="mass" min="1" max="50" value="5" oninput="updatePhysics()">  
 
-    <!-- PHYSICS SECTION -->
-    <div id="phys-section" class="section">
-        <div class="container">
-            <h2>⚡ Physics Lab</h2>
-            <p style="text-align:center; color:#94a3b8; margin-bottom:24px; max-width:600px; margin-left:auto; margin-right:auto;">
-                Interactive real-world physics simulations. Built with accurate Newtonian mechanics.
+<h3 id="acc"></h3>
+
+<canvas id="canvas" width="400" height="200" style="background:black;"></canvas><br>
+<button onclick="launch()">Launch</button>
+
+<hr>
+
+<h2>🤖 AI Teacher</h2>
+
+<input id="aiInput" placeholder="Ask something..." style="padding:10px; width:60%">
+<button onclick="askAI()">Ask</button>
+
+<div id="aiBox"></div>
+
+<script>
+
+// ================= DATA =================
+const elements = ["sodium", "water", "oxygen", "hydrogen"];
+let selected = [];
+
+// ================= RENDER =================
+const chemDiv = document.getElementById("chem");
+
+elements.forEach(el => {
+    let d = document.createElement("div");
+    d.className = "element";
+    d.innerText = el;
+    d.onclick = () => select(el);
+    chemDiv.appendChild(d);
+});
+
+function select(el) {
+    if (!selected.includes(el)) selected.push(el);
+}
+
+// ================= MIX =================
+function mix() {
+    let key = selected.sort().join("+");
+    let result = "";
+
+    if (key === "sodium+water") {
+        result = "💥 Explosion! 2Na + 2H₂O → 2NaOH + H₂";
+    } 
+    else if (key === "hydrogen+oxygen") {
+        result = "💧 Water formed! 2H₂ + O₂ → 2H₂O";
+    } 
+    else {
+        result = "No reaction";
+    }
+
+    document.getElementById("result").innerText = result;
+}
+
+// ================= PHYSICS =================
+let acc = 0;
+let x = 10;
+let v = 0;
+let ctx = document.getElementById("canvas").getContext("2d");
+
+function updatePhysics() {
+    let f = document.getElementById("force").value;
+    let m = document.getElementById("mass").value;
+
+    acc = f / m;
+    document.getElementById("acc").innerText = "Acceleration: " + acc.toFixed(2);
+}
+
+function launch() {
+    x = 10;
+    v = 0;
+    animate();
+}
+
+function animate() {
+    ctx.clearRect(0,0,400,200);
+
+    v += acc * 0.1;
+    x += v;
+
+    ctx.fillStyle = "blue";
+    ctx.fillRect(x, 80, 30, 30);
+
+    if (x < 350) requestAnimationFrame(animate);
+}
+
+// ================= OFFLINE AI =================
+function askAI() {
+    let input = document.getElementById("aiInput").value.toLowerCase();
+    let response = "I don't understand yet.";
+
+    // SIMPLE RULE-BASED AI
+    if (input.includes("force")) {
+        response = "Force is a push or pull. Formula: F = ma";
+    }
+    else if (input.includes("acceleration")) {
+        response = "Acceleration is how fast velocity changes.";
+    }
+    else if (input.includes("sodium")) {
+        response = "Sodium reacts violently with water.";
+    }
+    else if (input.includes("water")) {
+        response = "Water is H₂O, formed from hydrogen and oxygen.";
+    }
+    else if (input.includes("ohm")) {
+        response = "Ohm's Law: V = I × R";
+    }
+
+    document.getElementById("aiBox").innerText = response;
+}
+
+// INIT
+updatePhysics();
+
+</script>
+
+</body>
+</html>active real-world physics simulations. Built with accurate Newtonian mechanics.
             </p>
 
             <div class="elements" id="phys-elements"></div>
