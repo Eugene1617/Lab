@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Real Science Lab</title>
+
+<style>
+body {
+  font-family: Arial;
+  margin: 0;
+  background: #0f172a;
+  color: white;
+  text-align: center;
+}
+
+header {
+  padding: 15px;
+  background: #1e293b;
+  font-size: 20px;
+}
+
+.container {
+  padding: 15px;
+}
+
+.elements {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+}
+
+.element {
+  padding: 10px;
+  background: #334155;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.element:hover {
+  background: #475569;
+}
+
+#mix-area {
+  margin: 20px;
+  padding: 20px;
+  border: 2px dashed #64748b;
+}
+
+.result {
+  margin-top: 20px;
+  padding: 15px;
+  background: #1e293b;
+  border-radius: 10px;
+}
+
+button {
+  margin: 5px;
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  background: #3b82f6;
+  color: white;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #2563eb;
+}
+
+/* Animations */
+@keyframes explode {
+  0% { transform: scale(0.5); }
+  50% { transform: scale(1.5); }
+  100% { transform: scale(1); }
+}
+
+@keyframes bubble {
+  0% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0); }
+}
+</style>
+</head>
+
+<body>
+
+<header>🧪 Real Science Lab</header>
+
+<div class="container">
+
+<div class="elements" id="elements"></div>
+
+<div id="mix-area">
+  <h3>Mix Area</h3>
+  <p id="selected"></p>
+  <button onclick="mix()">Mix</button>
+</div>
+
+<div id="result" class="result" style="display:none;"></div>
+
+<!-- Physics Simulation -->
+<div id="physics" style="display:none;">
+  <h3>⚡ Physics Simulator</h3>
+
+  <label>Force: <span id="forceVal">10</span>N</label><br>
+  <input type="range" id="force" min="1" max="100" value="10"><br>
+
+  <label>Mass: <span id="massVal">2</span>kg</label><br>
+  <input type="range" id="mass" min="1" max="50" value="2"><br>
+
+  <p>Acceleration: <span id="acc"></span> m/s²</p>
+</div>
+
+<button onclick="startQuiz()">🧠 Quiz</button>
+
+</div>
+
+<script>
+// ELEMENTS
+const elements = [
+  {id:'sodium',name:'Sodium 🧂'},
+  {id:'water',name:'Water 💧'},
+  {id:'oxygen',name:'Oxygen 🌬️'},
+  {id:'hydrogen',name:'Hydrogen 🫧'},
+  {id:'iron',name:'Iron 🔩'},
+  {id:'force',name:'Force ➡️'},
+  {id:'mass',name:'Mass ⚖️'},
+  {id:'current',name:'Current 🔌'},
+  {id:'resistance',name:'Resistance ⚡'},
+  {id:'pulley',name:'Pulley 🛞'},
+  {id:'load',name:'Load 📦'}
+];
+
+// COMBINATIONS
+const combos = {
+  'sodium+water':{
+    name:'Explosion 💥',
+    desc:'Sodium reacts violently with water',
+    formula:'2Na + 2H₂O → 2NaOH + H₂'
+  },
+  'hydrogen+oxygen':{
+    name:'Water 💧',
+    desc:'Hydrogen burns in oxygen',
+    formula:'2H₂ + O₂ → 2H₂O'
+  },
+  'iron+oxygen':{
+    name:'Rust 🟤',
+    desc:'Iron oxidizes',
+    formula:'4Fe + 3O₂ → 2Fe₂O₃'
+  },
+  'force+mass':{
+    name:'Acceleration 🚀',
+    desc:'Force causes acceleration',
+    formula:'F = ma',
+    physics:true
+  },
+  'current+resistance':{
+    name:'Ohm Law 🔋',
+    desc:'Voltage depends on current',
+    formula:'V = IR'
+  },
+  'force+pulley':{
+    name:'Mechanical Advantage 🏗️',
+    desc:'Pulley reduces effort',
+    formula:'MA = Load/Effort'
+  }
+};
+
+let selected = [];
+
+// LOAD ELEMENTS
+const elDiv = document.getElementById('elements');
+elements.forEach(e=>{
+  const btn = document.createElement('div');
+  btn.className='element';
+  btn.innerText=e.name;
+  btn.onclick=()=>select(e.id);
+  elDiv.appendChild(btn);
+});
+
+// SELECT
+function select(id){
+  if(selected.length<2){
+    selected.push(id);
+  } else {
+    selected=[id];
+  }
+  document.getElementById('selected').innerText = selected.join(' + ');
+}
+
+// MIX
+function mix(){
+  const key = selected.join('+');
+  const rev = selected.reverse().join('+');
+  const res = combos[key] || combos[rev];
+
+  const resultDiv = document.getElementById('result');
+  resultDiv.style.display='block';
+
+  if(res){
+    resultDiv.innerHTML = `
+      <h3>${res.name}</h3>
+      <p>${res.desc}</p>
+      <button onclick="alert('${res.formula}')">📐 Show Formula</button>
+    `;
+
+    // Animation
+    if(res.name.includes('Explosion')){
+      resultDiv.style.animation='explode 0.5s';
+    }
+
+    // Physics sim
+    if(res.physics){
+      document.getElementById('physics').style.display='block';
+    } else {
+      document.getElementById('physics').style.display='none';
+    }
+
+  } else {
+    resultDiv.innerHTML = "❌ No reaction";
+  }
+
+  selected=[];
+}
+
+// PHYSICS SIM
+const f = document.getElementById('force');
+const m = document.getElementById('mass');
+
+function updatePhysics(){
+  const force = f.value;
+  const mass = m.value;
+
+  document.getElementById('forceVal').innerText=force;
+  document.getElementById('massVal').innerText=mass;
+
+  document.getElementById('acc').innerText=(force/mass).toFixed(2);
+}
+
+f.oninput=updatePhysics;
+m.oninput=updatePhysics;
+updatePhysics();
+
+// QUIZ
+const quiz = [
+  {q:'Formula of force?',a:['F=ma','V=IR','E=mc²'],c:0},
+  {q:'Sodium + water?',a:['Explosion','Nothing','Ice'],c:0}
+];
+
+let qi=0;
+
+function startQuiz(){
+  showQ();
+}
+
+function showQ(){
+  const q=quiz[qi];
+  const r=document.getElementById('result');
+  r.style.display='block';
+
+  r.innerHTML=`
+    <h3>${q.q}</h3>
+    ${q.a.map((opt,i)=>`<button onclick="check(${i})">${opt}</button>`).join('')}
+  `;
+}
+
+function check(i){
+  if(i===quiz[qi].c){
+    alert('✅ Correct');
+  } else {
+    alert('❌ Wrong');
+  }
+  qi++;
+  if(qi<quiz.length) showQ();
+}
+</script>
+
+</body>
+</html>
