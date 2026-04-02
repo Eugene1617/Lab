@@ -1,40 +1,343 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Quantum Lab: Real Science + AI Simulator</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VisualLab • Interactive Chemistry & Physics Lab</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&family=Space+Grotesk:wght@500;600;700&display=swap');
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Space+Grotesk:wght@500;600&amp;display=swap');
+        
+        :root {
+            --tw-color-primary: #00d4ff;
         }
-
+        
         body {
-            font-family: 'Inter', system-ui, -apple-system, sans-serif;
-            background: radial-gradient(circle at 10% 20%, #0a0f1e, #030617);
-            color: #f1f5f9;
-            min-height: 100vh;
-            padding: 24px 20px;
+            font-family: 'Inter', system_ui, sans-serif;
+        }
+        
+        .heading-font {
+            font-family: 'Space Grotesk', sans-serif;
         }
 
-        header {
-            text-align: center;
-            margin-bottom: 36px;
+        .hero-bg {
+            background: linear-gradient(90deg, #0a0a0a 0%, #1a1a2e 100%);
         }
 
-        h1 {
-            font-family: 'Space Grotesk', monospace;
-            font-size: 2.7rem;
-            background: linear-gradient(135deg, #60a5fa, #c084fc);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            letter-spacing: -0.02em;
+        .lab-card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .lab-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 25px 50px -12px rgb(0 212 255 / 0.15);
+        }
+
+        .svg-container {
+            filter: drop-shadow(0 10px 15px rgb(0 212 255 / 0.3));
+        }
+
+        .liquid {
+            transition: fill 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .experiment-panel {
+            animation: fadeIn 0.5s ease forwards;
+        }
+    </style>
+</head>
+<body class="bg-zinc-950 text-white">
+    <!-- NAVBAR -->
+    <nav class="bg-zinc-900 border-b border-zinc-800 sticky top-0 z-50">
+        <div class="max-w-screen-2xl mx-auto px-8 py-5 flex items-center justify-between">
+            <!-- Logo -->
+            <div class="flex items-center gap-x-3">
+                <svg width="42" height="42" viewBox="0 0 42 42" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Atom SVG -->
+                    <circle cx="21" cy="21" r="8" stroke="#00d4ff" stroke-width="4"/>
+                    <circle cx="21" cy="21" r="14" stroke="#00d4ff" stroke-width="3" opacity="0.4"/>
+                    <!-- Electron orbits -->
+                    <ellipse cx="21" cy="21" rx="18" ry="8" transform="rotate(-35 21 21)" stroke="#00d4ff" stroke-width="2" opacity="0.7"/>
+                    <ellipse cx="21" cy="21" rx="18" ry="8" transform="rotate(35 21 21)" stroke="#00d4ff" stroke-width="2" opacity="0.7"/>
+                    <circle cx="21" cy="21" r="2" fill="#fff"/>
+                </svg>
+                <h1 class="heading-font text-3xl tracking-tighter">VisualLab</h1>
+            </div>
+
+            <div class="flex items-center gap-x-8 text-sm font-medium">
+                <a onclick="switchLab(0)" class="cursor-pointer flex items-center gap-x-2 hover:text-[#00d4ff] transition-colors" id="nav-chem">
+                    <i class="fa-solid fa-flask"></i>
+                    <span>Chemistry Lab</span>
+                </a>
+                <a onclick="switchLab(1)" class="cursor-pointer flex items-center gap-x-2 hover:text-[#00d4ff] transition-colors" id="nav-phys">
+                    <i class="fa-solid fa-atom"></i>
+                    <span>Physics Lab</span>
+                </a>
+                <a href="#gallery" class="flex items-center gap-x-2 hover:text-[#00d4ff] transition-colors">
+                    <i class="fa-solid fa-images"></i>
+                    <span>Real Lab Gallery</span>
+                </a>
+                <div class="h-8 w-px bg-zinc-700"></div>
+                <button onclick="resetLab()" 
+                        class="px-6 py-2.5 bg-white text-zinc-900 hover:bg-[#00d4ff] hover:text-white rounded-2xl font-semibold flex items-center gap-x-2 transition-all">
+                    <i class="fa-solid fa-rotate-right"></i>
+                    <span>Reset Lab</span>
+                </button>
+            </div>
+
+            <div class="flex items-center gap-x-4">
+                <div class="bg-zinc-800 text-xs px-4 h-9 rounded-3xl flex items-center font-mono border border-zinc-700">
+                    <span class="text-emerald-400">●</span>
+                    <span class="ml-1">LIVE SIMULATION</span>
+                </div>
+                <a href="https://github.com" target="_blank"
+                   class="flex items-center justify-center w-9 h-9 bg-zinc-800 hover:bg-zinc-700 rounded-2xl transition-colors">
+                    <i class="fa-brands fa-github"></i>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- HERO -->
+    <header class="hero-bg pt-16 pb-24">
+        <div class="max-w-screen-2xl mx-auto px-8 grid grid-cols-2 gap-12 items-center">
+            <div>
+                <div class="inline-flex items-center gap-x-2 bg-white/10 text-white text-sm font-medium px-5 h-9 rounded-3xl mb-6">
+                    <span class="relative flex h-3 w-3">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#00d4ff] opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-3 w-3 bg-[#00d4ff]"></span>
+                    </span>
+                    VISUAL INTERACTIVE LAB
+                </div>
+                
+                <h2 class="heading-font text-7xl leading-none tracking-tighter mb-4">
+                    Chemistry &amp; Physics.<br>
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-[#00d4ff] to-white">See it. Simulate it. Master it.</span>
+                </h2>
+                
+                <p class="text-xl text-zinc-400 max-w-md mb-10">
+                    A beautiful, fully interactive virtual laboratory. 
+                    Real-time SVG animations, online scientific imagery, and hands-on experiments.
+                </p>
+                
+                <div class="flex items-center gap-x-4">
+                    <button onclick="switchLab(0)" 
+                            class="px-8 py-4 bg-[#00d4ff] hover:bg-cyan-300 text-zinc-950 font-semibold text-lg rounded-3xl flex items-center gap-x-3 transition-all">
+                        <i class="fa-solid fa-flask-vial"></i>
+                        ENTER CHEMISTRY LAB
+                    </button>
+                    <button onclick="switchLab(1)" 
+                            class="px-8 py-4 border border-white/50 hover:border-[#00d4ff] font-semibold text-lg rounded-3xl flex items-center gap-x-3 transition-all">
+                        <i class="fa-solid fa-atom"></i>
+                        ENTER PHYSICS LAB
+                    </button>
+                </div>
+                
+                <div class="mt-12 flex items-center gap-x-8 text-sm">
+                    <div class="flex items-center gap-x-2">
+                        <i class="fa-solid fa-check text-emerald-400"></i>
+                        <span>100% browser-based</span>
+                    </div>
+                    <div class="flex items-center gap-x-2">
+                        <i class="fa-solid fa-check text-emerald-400"></i>
+                        <span>No downloads</span>
+                    </div>
+                    <div class="flex items-center gap-x-2">
+                        <i class="fa-solid fa-check text-emerald-400"></i>
+                        <span>Real-time SVG + JS physics</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Hero visual -->
+            <div class="relative flex justify-end">
+                <div class="svg-container bg-zinc-900/70 backdrop-blur-xl p-8 rounded-3xl border border-white/10">
+                    <svg width="520" height="380" viewBox="0 0 520 380" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <!-- Background beaker + pendulum combined -->
+                        <!-- Beaker -->
+                        <path d="M120 80 L120 260 L220 260 L220 80" fill="none" stroke="#00d4ff" stroke-width="28" stroke-linejoin="round"/>
+                        <path d="M105 80 L120 80 L220 80 L235 80" fill="none" stroke="#00d4ff" stroke-width="28"/>
+                        <!-- Liquid in beaker -->
+                        <rect x="135" y="145" width="75" height="125" rx="8" fill="#22d3ee" opacity="0.85"/>
+                        <!-- Bubbles -->
+                        <circle cx="160" cy="230" r="8" fill="#fff" opacity="0.6">
+                            <animate attributeName="cy" values="230;190" dur="1.2s" repeatCount="indefinite"/>
+                            <animate attributeName="opacity" values="0.6;0" dur="1.2s" repeatCount="indefinite"/>
+                        </circle>
+                        <circle cx="185" cy="215" r="5" fill="#fff" opacity="0.6">
+                            <animate attributeName="cy" values="215;170" dur="0.9s" repeatCount="indefinite"/>
+                            <animate attributeName="opacity" values="0.6;0" dur="0.9s" repeatCount="indefinite"/>
+                        </circle>
+                        
+                        <!-- Pendulum -->
+                        <line id="hero-rod" x1="350" y1="80" x2="350" y2="220" stroke="#a3a3a3" stroke-width="14"/>
+                        <circle id="hero-bob" cx="350" cy="220" r="32" fill="#f43f5e"/>
+                        <circle cx="350" cy="80" r="14" fill="#27272a"/>
+                        
+                        <!-- Orbiting electrons around atom icon -->
+                        <g opacity="0.8">
+                            <circle cx="460" cy="120" r="38" fill="none" stroke="#00d4ff" stroke-width="4"/>
+                            <circle cx="460" cy="120" r="38" fill="none" stroke="#00d4ff" stroke-width="4" transform="rotate(120 460 120)">
+                                <animateTransform attributeName="transform" type="rotate" from="0 460 120" to="360 460 120" dur="8s" repeatCount="indefinite"/>
+                            </circle>
+                            <circle cx="460" cy="120" r="12" fill="#fff"/>
+                        </g>
+                        
+                        <!-- Lab title badge -->
+                        <rect x="310" y="260" width="170" height="52" rx="26" fill="#fff" fill-opacity="0.1"/>
+                        <text x="330" y="292" fill="#fff" font-size="18" font-weight="600">CHEM + PHYSICS</text>
+                    </svg>
+                </div>
+                
+                <!-- Floating badges -->
+                <div class="absolute -top-4 -left-6 bg-white text-zinc-900 text-xs font-bold px-4 h-8 rounded-2xl flex items-center shadow-xl">
+                    <i class="fa-solid fa-vial mr-2 text-rose-500"></i>
+                    LIVE REACTION
+                </div>
+                <div class="absolute -bottom-6 right-12 bg-emerald-400 text-zinc-900 text-xs font-bold px-4 h-8 rounded-2xl flex items-center shadow-xl">
+                    <i class="fa-solid fa-waveform mr-2"></i>
+                    REAL-TIME PHYSICS
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- LAB TABS + CONTENT -->
+    <div class="max-w-screen-2xl mx-auto px-8 pb-20">
+        <!-- Tab selector -->
+        <div class="flex border-b border-zinc-800 mb-10">
+            <button onclick="switchLab(0)" id="tab-chem"
+                    class="tab-button active flex-1 max-w-xs py-6 text-xl font-semibold flex items-center justify-center gap-x-3 border-b-4 border-[#00d4ff] text-[#00d4ff]">
+                <i class="fa-solid fa-flask-vial text-3xl"></i>
+                CHEMISTRY LAB
+            </button>
+            <button onclick="switchLab(1)" id="tab-phys"
+                    class="tab-button flex-1 max-w-xs py-6 text-xl font-semibold flex items-center justify-center gap-x-3 border-b-4 border-transparent hover:text-[#00d4ff]">
+                <i class="fa-solid fa-atom text-3xl"></i>
+                PHYSICS LAB
+            </button>
+        </div>
+
+        <!-- CHEMISTRY LAB -->
+        <div id="lab-chemistry" class="experiment-panel">
+            <div class="grid grid-cols-12 gap-8">
+                <!-- Interactive Beaker -->
+                <div class="col-span-7 bg-zinc-900 rounded-3xl p-10 border border-white/10">
+                    <div class="flex justify-between items-baseline mb-8">
+                        <h3 class="text-4xl font-semibold">Virtual Beaker</h3>
+                        <div class="flex gap-x-3">
+                            <button onclick="addChemical(0)" 
+                                    class="px-5 py-2 text-sm bg-rose-500 hover:bg-rose-600 rounded-2xl flex items-center">
+                                <i class="fa-solid fa-vial mr-2"></i> HCl (Acid)
+                            </button>
+                            <button onclick="addChemical(1)" 
+                                    class="px-5 py-2 text-sm bg-blue-500 hover:bg-blue-600 rounded-2xl flex items-center">
+                                <i class="fa-solid fa-vial mr-2"></i> NaOH (Base)
+                            </button>
+                            <button onclick="addChemical(2)" 
+                                    class="px-5 py-2 text-sm bg-purple-500 hover:bg-purple-600 rounded-2xl flex items-center">
+                                <i class="fa-solid fa-vial mr-2"></i> Phenolphthalein
+                            </button>
+                            <button onclick="addChemical(3)" 
+                                    class="px-5 py-2 text-sm bg-emerald-500 hover:bg-emerald-600 rounded-2xl flex items-center">
+                                <i class="fa-solid fa-water mr-2"></i> H₂O
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-center">
+                        <svg id="beaker-svg" width="380" height="420" viewBox="0 0 380 420" xmlns="http://www.w3.org/2000/svg" class="svg-container">
+                            <!-- Beaker outline -->
+                            <path d="M90 90 L90 330 L290 330 L290 90" fill="none" stroke="#64748b" stroke-width="38" stroke-linejoin="round" stroke-linecap="round"/>
+                            <!-- Beaker lip -->
+                            <path d="M65 90 L90 90 L290 90 L315 90" fill="none" stroke="#64748b" stroke-width="38"/>
+                            <!-- Liquid -->
+                            <path id="liquid-path" d="M110 200 Q190 200 270 200 L270 330 Q190 330 110 330 Z" fill="#22d3ee" class="liquid"/>
+                            <!-- Bubbles container -->
+                            <g id="bubbles-group"></g>
+                            <!-- Measurement lines -->
+                            <line x1="300" y1="140" x2="330" y2="140" stroke="#64748b" stroke-width="6"/>
+                            <line x1="300" y1="190" x2="330" y2="190" stroke="#64748b" stroke-width="6"/>
+                            <line x1="300" y1="240" x2="330" y2="240" stroke="#64748b" stroke-width="6"/>
+                            <line x1="300" y1="290" x2="330" y2="290" stroke="#64748b" stroke-width="6"/>
+                        </svg>
+                    </div>
+
+                    <div id="reaction-result" class="mt-8 text-center text-lg font-medium bg-zinc-800 rounded-2xl py-4 min-h-[60px]">
+                        <span class="text-zinc-400">Add reagents to see the reaction • </span>
+                        <span id="result-text" class="text-[#00d4ff]">Currently neutral solution</span>
+                    </div>
+                </div>
+
+                <!-- Chemistry info + online image -->
+                <div class="col-span-5 space-y-6">
+                    <div class="bg-zinc-900 rounded-3xl p-8 border border-white/10">
+                        <h4 class="text-[#00d4ff] uppercase tracking-[1px] text-sm mb-3">Experiment: Acid-Base Titration</h4>
+                        <p class="text-zinc-300 text-lg">Watch real-time color changes as you mix acids, bases, and indicators. Perfect for learning pH concepts visually.</p>
+                        <div class="mt-6 flex items-center text-xs gap-x-4 text-zinc-400">
+                            <div><i class="fa-solid fa-info-circle"></i> Uses inline SVG + CSS/JS animation</div>
+                            <div><i class="fa-solid fa-image"></i> Powered by real lab imagery</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Online image -->
+                    <div class="rounded-3xl overflow-hidden border border-white/10 relative">
+                        <img src="https://picsum.photos/id/1015/800/520" alt="Real chemistry lab with glassware and solutions" 
+                             class="w-full h-full object-cover">
+                        <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-6">
+                            <p class="text-sm font-medium">Stock image: University chemistry laboratory (Unsplash source)</p>
+                        </div>
+                    </div>
+                    
+                    <div class="text-xs flex justify-between text-zinc-400">
+                        <a href="https://en.wikipedia.org/wiki/Titration" target="_blank" class="flex items-center hover:text-[#00d4ff]">
+                            Learn more about titration <i class="fa-solid fa-arrow-up-right-from-square ml-1"></i>
+                        </a>
+                        <span>Online image from Picsum + SVG beaker</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PHYSICS LAB -->
+        <div id="lab-physics" class="experiment-panel hidden">
+            <div class="grid grid-cols-12 gap-8">
+                <!-- Interactive Pendulum -->
+                <div class="col-span-7 bg-zinc-900 rounded-3xl p-10 border border-white/10">
+                    <div class="flex justify-between mb-8">
+                        <h3 class="text-4xl font-semibold">Pendulum Simulator</h3>
+                        <div class="flex items-center gap-x-8">
+                            <div>
+                                <label class="block text-xs text-zinc-400 mb-1">LENGTH (m)</label>
+                                <input type="range" id="length-slider" min="0.5" max="3" step="0.1" value="1.5" 
+                                       class="w-48 accent-[#00d4ff]" oninput="updatePendulum()">
+                            </div>
+                            <div>
+                                <label class="block text-xs text-zinc-400 mb-1">GRAVITY (m/s²)</label>
+                                <input type="range" id="gravity-slider" min="6" max="12" step="0.1" value="9.8" 
+                                       class="w-48 accent-[#00d4ff]" oninput="updatePendulum()">
+                            </div>
+                            <button onclick="togglePendulum()" id="pendulum-btn"
+                                    class="px-8 py-3 bg-[#00d4ff] text-zinc-950 rounded-3xl font-semibold flex items-center gap-x-2">
+                                <i class="fa-solid fa-play" id="play-icon"></i>
+                                <span id="play-text">START SWING</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-center py-8">
+                        <svg id="pendulum-svg" width="520" height="420" viewBox="0 0 520 420" xmlns="http://www.w3.org/2000/svg">
+                            <defs>
+                                <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+                                    <feGaussianBlur in="SourceAlpha" stdDeviation="4"/>
+                                    <feOffset dx="0" dy="8" result="offsetblur"/>
+                                    <feComponentTransfer>
+                                        <feFuncA type="linear" slope="0.6" intercept="0"/>
+                                    </feComponentTransfer>
+                                    <feMerge>
+                                        <feMergeNode/>
+                                          letter-spacing: -0.02em;
             display: flex;
             align-items: center;
             justify-content: center;
