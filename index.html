@@ -1,40 +1,608 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Real Science Lab</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real Science Lab</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Space+Grotesk:wght@500;600&display=swap');
 
-<style>
-body {
-  font-family: Arial;
-  margin: 0;
-  background: #0f172a;
-  color: white;
-  text-align: center;
-}
+        :root {
+            --primary: #3b82f6;
+        }
 
-header {
-  padding: 15px;
-  background: #1e293b;
-  font-size: 20px;
-}
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-.container {
-  padding: 15px;
-}
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
+            color: white;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
 
-.elements {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 10px;
-}
+        header {
+            background: #1e293b;
+            padding: 20px 0;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
 
-.element {
-  padding: 10px;
-  background: #334155;
-  border-radius: 10px;
+        header h1 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 2.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .tabs {
+            display: flex;
+            justify-content: center;
+            background: #1e293b;
+            padding: 8px;
+            gap: 8px;
+            border-bottom: 1px solid #334155;
+        }
+
+        .tab-button {
+            padding: 14px 32px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            background: transparent;
+            color: #cbd5e1;
+            border: none;
+            border-radius: 9999px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tab-button.active {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 10px 15px -3px rgb(59 130 246);
+        }
+
+        .section {
+            display: none;
+            padding: 30px 20px;
+            max-width: 1280px;
+            margin: 0 auto;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        h2 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 2rem;
+            margin-bottom: 20px;
+            text-align: center;
+            background: linear-gradient(90deg, #60a5fa, #a78bfa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .elements {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 16px;
+            margin-bottom: 40px;
+        }
+
+        .element {
+            background: #334155;
+            border-radius: 16px;
+            padding: 20px 16px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2);
+            font-size: 1.1rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .element:hover {
+            transform: translateY(-6px) scale(1.05);
+            background: #475569;
+            box-shadow: 0 20px 25px -5px rgba(59, 130, 246, 0.3);
+        }
+
+        .mix-area {
+            background: #1e293b;
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border: 3px dashed #64748b;
+            transition: border-color 0.3s;
+        }
+
+        .mix-area.active {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.2);
+        }
+
+        .selected-items {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            min-height: 60px;
+            margin-bottom: 20px;
+        }
+
+        .selected-pill {
+            background: #64748b;
+            color: white;
+            padding: 8px 20px;
+            border-radius: 9999px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .selected-pill .remove {
+            background: #ef4444;
+            color: white;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+
+        .result {
+            background: #1e293b;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+            animation: popIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        @keyframes popIn {
+            0% { transform: scale(0.8); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .physics-sim {
+            background: #1e293b;
+            border-radius: 20px;
+            padding: 30px;
+            margin-top: 30px;
+        }
+
+        canvas {
+            width: 100%;
+            max-width: 700px;
+            height: 340px;
+            background: #0f172a;
+            border-radius: 16px;
+            display: block;
+            margin: 20px auto;
+            box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.6);
+        }
+
+        .controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #e2e8f0;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            accent-color: var(--primary);
+        }
+
+        .value {
+            font-family: monospace;
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #60a5fa;
+        }
+
+        button {
+            padding: 14px 28px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 9999px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        button.primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        button.primary:hover {
+            background: #2563eb;
+            transform: translateY(-2px);
+        }
+
+        button.secondary {
+            background: #64748b;
+            color: white;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.9);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: #1e293b;
+            max-width: 420px;
+            width: 90%;
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.4);
+        }
+
+        .quiz-option {
+            width: 100%;
+            text-align: left;
+            margin: 12px 0;
+            padding: 16px 20px;
+            background: #334155;
+            border-radius: 12px;
+            font-size: 1.1rem;
+        }
+
+        .quiz-option:hover {
+            background: #475569;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 40px 20px 20px;
+            color: #64748b;
+            font-size: 0.95rem;
+        }
+
+        /* Explosion animation */
+        @keyframes explode {
+            0% { transform: scale(0.6); }
+            40% { transform: scale(1.4); }
+            100% { transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>🧪 Real Science Lab</h1>
+        <p style="color:#64748b; margin-top: 4px;">Real reactions • Real physics • Real learning</p>
+    </header>
+
+    <!-- TABS -->
+    <div class="tabs">
+        <button onclick="switchTab(0)" class="tab-button active" id="tab-0">
+            🧪 Chemistry Lab
+        </button>
+        <button onclick="switchTab(1)" class="tab-button" id="tab-1">
+            ⚡ Physics Lab
+        </button>
+        <button onclick="switchTab(2)" class="tab-button" id="tab-2">
+            🧠 Science Quiz
+        </button>
+    </div>
+
+    <!-- CHEMISTRY SECTION -->
+    <div id="chem-section" class="section active">
+        <div class="container">
+            <h2>🧪 Chemistry Lab</h2>
+            <p style="text-align:center; color:#94a3b8; margin-bottom:24px; max-width:600px; margin-left:auto; margin-right:auto;">
+                Mix real elements and observe accurate chemical reactions. All formulas are scientifically correct.
+            </p>
+
+            <div class="elements" id="chem-elements"></div>
+
+            <div class="mix-area" id="chem-mix-area">
+                <h3 style="margin-bottom:16px;">🧪 Mix Area — Drag or click 2 elements</h3>
+                <div class="selected-items" id="chem-selected-items"></div>
+                <div style="display:flex; gap:12px; flex-wrap:wrap;">
+                    <button onclick="mixChemistry()" class="primary">Mix Chemicals</button>
+                    <button onclick="clearSelection('chem')" class="secondary">Clear All</button>
+                </div>
+            </div>
+
+            <div id="chem-result" class="result" style="display:none;"></div>
+        </div>
+    </div>
+
+    <!-- PHYSICS SECTION -->
+    <div id="phys-section" class="section">
+        <div class="container">
+            <h2>⚡ Physics Lab</h2>
+            <p style="text-align:center; color:#94a3b8; margin-bottom:24px; max-width:600px; margin-left:auto; margin-right:auto;">
+                Interactive real-world physics simulations. Built with accurate Newtonian mechanics.
+            </p>
+
+            <div class="elements" id="phys-elements"></div>
+
+            <div class="mix-area" id="phys-mix-area">
+                <h3 style="margin-bottom:16px;">🔬 Physics Combinations</h3>
+                <div class="selected-items" id="phys-selected-items"></div>
+                <div style="display:flex; gap:12px; flex-wrap:wrap;">
+                    <button onclick="mixPhysics()" class="primary">Run Experiment</button>
+                    <button onclick="clearSelection('phys')" class="secondary">Clear All</button>
+                </div>
+            </div>
+
+            <div id="phys-result" class="result" style="display:none;"></div>
+
+            <!-- REAL PHYSICS SIMULATOR -->
+            <div class="physics-sim">
+                <h3>🚀 Newton's Second Law Simulator (F = ma)</h3>
+                <p style="color:#94a3b8; margin-bottom:20px;">Watch a real object accelerate in real time. Change force or mass and launch.</p>
+
+                <div class="controls">
+                    <div>
+                        <label>Force <span id="phys-force-val" class="value">20</span> N</label>
+                        <input type="range" id="phys-force" min="1" max="100" value="20" oninput="updatePhysicsLive()">
+                    </div>
+                    <div>
+                        <label>Mass <span id="phys-mass-val" class="value">5</span> kg</label>
+                        <input type="range" id="phys-mass" min="1" max="50" value="5" oninput="updatePhysicsLive()">
+                    </div>
+                </div>
+
+                <p style="margin:16px 0 8px; text-align:center;">
+                    Acceleration: <span id="phys-acc" class="value">4.00</span> m/s²
+                </p>
+
+                <canvas id="fmaCanvas" width="700" height="340"></canvas>
+
+                <div style="text-align:center;">
+                    <button onclick="launchPhysicsSim()" class="primary" style="padding:16px 40px; font-size:1.2rem;">
+                        ▶️ Launch Object
+                    </button>
+                    <button onclick="resetPhysicsSim()" class="secondary" style="margin-left:12px;">
+                        Reset
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- QUIZ SECTION -->
+    <div id="quiz-section" class="section">
+        <div class="container">
+            <h2>🧠 Test Your Science Knowledge</h2>
+            <div id="quiz-container" style="max-width:700px; margin:0 auto;">
+                <div id="quiz-result" class="result" style="display:block;">
+                    <h3 id="quiz-question" style="margin-bottom:24px;"></h3>
+                    <div id="quiz-options"></div>
+                    <div id="quiz-feedback" style="margin-top:24px; min-height:60px;"></div>
+                    <button onclick="nextQuestion()" id="next-btn" style="display:none; margin-top:20px;" class="primary">Next Question →</button>
+                </div>
+            </div>
+
+            <div style="text-align:center; margin-top:40px;">
+                <p id="score-display" style="font-size:1.4rem; font-weight:700; color:#60a5fa;"></p>
+                <button onclick="restartQuiz()" class="secondary">Restart Quiz</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL -->
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <h3 id="modal-title"></h3>
+            <p id="modal-text" style="margin:20px 0; font-size:1.1rem;"></p>
+            <button onclick="hideModal()" class="primary">OK</button>
+        </div>
+    </div>
+
+    <div class="footer">
+        Real Science Lab — All reactions &amp; physics are based on actual science • Built as a single-file production-ready demo
+    </div>
+
+    <script>
+        // ==================== DATA ====================
+        'use strict';
+
+        // Chemistry elements (real chemicals)
+        const chemistryElements = [
+            { id: 'sodium', name: 'Sodium 🧂' },
+            { id: 'water', name: 'Water 💧' },
+            { id: 'oxygen', name: 'Oxygen 🌬️' },
+            { id: 'hydrogen', name: 'Hydrogen 🫧' },
+            { id: 'iron', name: 'Iron 🔩' },
+            { id: 'magnesium', name: 'Magnesium 🔥' },
+            { id: 'hydrochloric', name: 'HCl Acid 🧪' }
+        ];
+
+        // Physics elements (real concepts)
+        const physicsElements = [
+            { id: 'force', name: 'Force ➡️' },
+            { id: 'mass', name: 'Mass ⚖️' },
+            { id: 'current', name: 'Current 🔌' },
+            { id: 'resistance', name: 'Resistance ⚡' },
+            { id: 'pulley', name: 'Pulley 🛞' },
+            { id: 'load', name: 'Load 📦' }
+        ];
+
+        // Real scientific combinations
+        const combos = {
+            'sodium+water': {
+                name: 'Violent Explosion 💥',
+                desc: 'Sodium reacts violently with water producing hydrogen gas and heat',
+                formula: '2Na + 2H₂O → 2NaOH + H₂↑',
+                type: 'chem'
+            },
+            'hydrogen+oxygen': {
+                name: 'Combustion → Water 💧',
+                desc: 'Hydrogen burns explosively in oxygen to form water',
+                formula: '2H₂ + O₂ → 2H₂O',
+                type: 'chem'
+            },
+            'iron+oxygen': {
+                name: 'Rusting 🟫',
+                desc: 'Iron oxidizes slowly in the presence of oxygen and moisture',
+                formula: '4Fe + 3O₂ → 2Fe₂O₃',
+                type: 'chem'
+            },
+            'magnesium+hydrochloric': {
+                name: 'Hydrogen Gas Release ⚗️',
+                desc: 'Magnesium displaces hydrogen from hydrochloric acid',
+                formula: 'Mg + 2HCl → MgCl₂ + H₂↑',
+                type: 'chem'
+            },
+            'force+mass': {
+                name: 'Acceleration 🚀',
+                desc: 'Force applied to a mass causes acceleration (F = ma)',
+                formula: 'F = ma',
+                type: 'phys'
+            },
+            'current+resistance': {
+                name: 'Ohm’s Law 🔋',
+                desc: 'Voltage = Current × Resistance',
+                formula: 'V = I × R',
+                type: 'phys'
+            },
+            'force+pulley': {
+                name: 'Mechanical Advantage 🏗️',
+                desc: 'Pulleys multiply force and reduce effort needed to lift a load',
+                formula: 'MA = Load / Effort',
+                type: 'phys'
+            }
+        };
+
+        // Quiz questions (scientifically accurate)
+        let quizData = [
+            {
+                q: "What is the correct formula for Newton’s Second Law?",
+                a: ["F = ma", "V = IR", "E = mc²", "P = Fv"],
+                c: 0
+            },
+            {
+                q: "What gas is produced when sodium reacts with water?",
+                a: ["Oxygen", "Hydrogen", "Carbon dioxide", "Nitrogen"],
+                c: 1
+            },
+            {
+                q: "What does a pulley system primarily increase?",
+                a: ["Speed", "Mechanical advantage", "Mass", "Temperature"],
+                c: 1
+            },
+            {
+                q: "The reaction Mg + 2HCl → MgCl₂ + H₂ is an example of:",
+                a: ["Combustion", "Single displacement", "Synthesis", "Decomposition"],
+                c: 1
+            }
+        ];
+
+        // State
+        let selectedChem = [];
+        let selectedPhys = [];
+        let currentTab = 0;
+        let quizIndex = 0;
+        let score = 0;
+
+        // Canvas variables
+        let canvas, ctx;
+        let objectX = 80;
+        let velocity = 0;
+        let acceleration = 4;
+        let isAnimating = false;
+        let lastTimestamp = 0;
+
+        // ==================== HELPER FUNCTIONS ====================
+        function showModal(title, text) {
+            document.getElementById('modal-title').innerHTML = title;
+            document.getElementById('modal-text').innerHTML = text;
+            document.getElementById('modal').style.display = 'flex';
+        }
+
+        function hideModal() {
+            document.getElementById('modal').style.display = 'none';
+        }
+
+        function renderSelected(containerId, selectedArray, section) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = '';
+
+            selectedArray.forEach((id, index) => {
+                const element = chemistryElements.find(e => e.id === id) || physicsElements.find(e => e.id === id);
+                const pill = document.createElement('div');
+                pill.className = 'selected-pill';
+                pill.innerHTML = `
+                    ${element ? element.name : id}
+                    <span class="remove" onclick="removeFromSelection(${index}, '${section}')">×</span>
+                `;
+                container.appendChild(pill);
+            });
+
+            if (selectedArray.length === 0) {
+                container.innerHTML = `<p style="color:#64748b; font-style:italic; padding:12px 0;">Drag or click elements here to mix</p>`;
+            }
+        }
+
+        function removeFromSelection(index, section) {
+            if (section === 'chem') {
+                selectedChem.splice(index, 1);
+                renderSelected('chem-selected-items', selectedChem, 'chem');
+            } else {
+                selectedPhys.splice(index, 1);
+                renderSelected('phys-selected-items', selectedPhys, 'phys');
+            }
+        }
+
+        function clearSelection(section) {
+            if (section === 'chem') {
+                selectedChem = [];
+                renderSelected('chem-selected-items', selectedChem, 'chem');
+            } else {
+                selectedPhys = [];
+                renderSelected('phys-selected-items', selectedPhys, 'phys');
+            }
+        }
+
+        // ==================== TAB SYSTEM ====================
+        function switchTab(  border-radius: 10px;
   cursor: pointer;
 }
 
